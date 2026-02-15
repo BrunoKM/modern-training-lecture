@@ -36,7 +36,7 @@
 // Example slide commands:
 
 // #slide(title: "Title")[
-//   Example slide
+//   Example slide@malladi2022sdes
 // ]
 
 // #empty-slide()[
