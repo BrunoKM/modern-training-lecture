@@ -28,7 +28,7 @@
 == Is scale all you need?
 *Yes*. You can go home now.
 
-The rest of the lecture if for intellectual enjoyment only.
+The rest of the lecture if for intellectual enjoyment only. 
 // What components influence the constants in the scaling laws, i.e. determine data and compute efficiency.
 
 // Data, architecture, optimiser, hyperparameters
