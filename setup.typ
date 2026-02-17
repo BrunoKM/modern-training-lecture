@@ -1,4 +1,8 @@
 
+#let shortcite(key) = [
+  (#cite(key, form: "author") #cite(key, form: "year"))
+]
+
 #let loss = $cal(L)$
 #let dataset = $cal(D)$
 

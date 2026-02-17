@@ -6,6 +6,19 @@
 #set text(region: "GB")
 #set text(font: "Charter")
 
+
+#show bibliography: set text(0.6em)
+
+#show figure.caption: set text(
+  size: 0.75em,
+)
+#show figure.caption: set par(
+  spacing: 0.1em,
+  leading: 0.3em,
+  justify: true,
+)
+#show figure.caption: set align(left)
+
 #import themes.metropolis: *
 #show: metropolis-theme.with(
   aspect-ratio: "4-3",

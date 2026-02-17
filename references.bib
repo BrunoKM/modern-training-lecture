@@ -1,3 +1,11 @@
+@article{hoffmann2022training,
+  title={Training compute-optimal large language models},
+  author={Hoffmann, Jordan and Borgeaud, Sebastian and Mensch, Arthur and Buchatskaya, Elena and Cai, Trevor and Rutherford, Eliza and Casas, DDL and Hendricks, Lisa Anne and Welbl, Johannes and Clark, Aidan and others},
+  journal={arXiv preprint arXiv:2203.15556},
+  volume={10},
+  year={2022}
+}
+
 @article{malladi2022sdes, 
   year = {2022}, 
   title = {{On the SDEs and Scaling Rules for Adaptive Gradient Algorithms}}, 
@@ -19,6 +27,19 @@
   abstract = {{We study empirical scaling laws for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. Simple equations govern the dependence of overfitting on model/dataset size and the dependence of training speed on model size. These relationships allow us to determine the optimal allocation of a fixed compute budget. Larger models are significantly more sample-efficient, such that optimally compute-efficient training involves training very large models on a relatively modest amount of data and stopping significantly before convergence.}}, 
   keywords = {}, 
 }
+
+
+@article{lechau2024rethinking, 
+year = {2024}, 
+title = {{Rethinking Conventional Wisdom in Machine Learning: From Generalization to Scaling}}, 
+author = {Xiao, Lechao}, 
+journal = {arXiv}, 
+doi = {10.48550/arxiv.2409.15156}, 
+eprint = {2409.15156}, 
+abstract = {{The remarkable success of large language pretraining and the discovery of scaling laws signify a paradigm shift in machine learning. Notably, the primary objective has evolved from minimizing generalization error to reducing approximation error, and the most effective strategy has transitioned from regularization (in a broad sense) to scaling up models. This raises a critical question: Do the established principles that proved successful in the generalization-centric era remain valid in this new era of scaling? This paper examines several influential regularization-based principles that may no longer hold true in the scaling-centric, large language model (LLM) era. These principles include explicit L2 regularization and implicit regularization through small batch sizes and large learning rates. Additionally, we identify a new phenomenon termed ``scaling law crossover,'' where two scaling curves intersect at a certain scale, implying that methods effective at smaller scales may not generalize to larger ones. Together, these observations highlight two fundamental questions within this new paradigm: \$\textbackslashbullet\$ Guiding Principles for Scaling: If regularization is no longer the primary guiding principle for model design, what new principles are emerging to guide scaling? \$\textbackslashbullet\$ Model Comparison at Scale: How to reliably and effectively compare models at the scale where only a single experiment is feasible?}}, 
+keywords = {}
+}
+
 
 @misc{tran2025reevaluating,
   title={Reevaluating Theoretical Analysis Methods for Optimization in Deep Learning}, 
@@ -89,4 +110,18 @@
   volume={12},
   number = {61},
   year={2011}
+}
+
+@misc{balles2020geometry,
+    title={The Geometry of Sign Gradient Descent}, 
+    author={Lukas Balles and Fabian Pedregosa and Nicolas Le Roux},
+    howpublished={arXiv 2002.08056},
+    year={2020},
+}
+
+@misc{davis2025spectral,
+    title={When do spectral gradient updates help in deep learning?}, 
+    author={Damek Davis and Dmitriy Drusvyatskiy},
+    howpublished={arXiv 2512.04299},
+    year={2025},
 }

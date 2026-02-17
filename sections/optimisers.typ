@@ -205,7 +205,7 @@ where $nabla cal(L)(W_t) = U_t Sigma_t V_t^T$ with $Sigma_t = Diag(sigma_t)$ is 
 
 They should reflect the _strcuture_ of neural networks layers. Matrix norms can be motivated by operator norms and we can extend to the multi-layer setting by constructing a modular norm #cite(<bernstein2025modular>).
 
-The unique advantages of the $ell_infinity$ and $S_infinity$ geometry in deep learning are still actively researched.
+The unique advantages of the $ell_infinity$ and $S_infinity$ geometry in deep learning are still actively researched #cite(<balles2020geometry>) #cite(<davis2025spectral>).
 
 *Stochastic setting*
 
@@ -221,7 +221,7 @@ Replacing $nabla cal(L)(theta_t)$ with the stochastic gradient $g_t = nabla ell_
 
 Instead of changing the norm to model the error of our linear model, we can explicitly consider second order information.
 
-*Quadratic model*
+=== Quadratic model
 
 - Second-order Taylor expansion around $theta_t$:
   $
@@ -239,20 +239,38 @@ Instead of changing the norm to model the error of our linear model, we can expl
     = theta_t - nabla^2 cal(L)(theta_t)^(-1)  nabla cal(L)(theta_t).
   $
 
-- We call the inverse matrix in front of the gradient *preconditioner*
+// - We call the inverse matrix in front of the gradient *preconditioner*
+- The Hessian might have negative eigenvalues (non-convexity), but we can approximate it with the *generalised Gauss-Newton matrix* #cite(<martens2014new>), which is guaranteed to be positive semi-definite
 
-- In deep learning, the Hessian might have negative eigenvalues (no convexity), but we can approximate the Hessian with the *generalised Gauss-Newton matrix*, which is guaranteed to be positive semi-definite
+- For many common loss functions this corresponds to *natural gradient descent* #cite(<amari1998natural>), which uses the Fisher information matrix
 
-- For many common loss functions this corresponds to *natural gradient descent*, which uses the Fisher information matrix as the preconditioner 
+- Alternatively, we consider a preconditioner that is not defined at a single iterate $theta_t$ like all the choices above, but across the *parameter trajectory*
 
-- Alternatively, we consider a preconditioner that is not defined at a single iterate $theta_t$ like all the choices above, but by the *parameter trajectory*
+- The canonical preconditioner in this setting is used in full-matrix AdaGrad:
+  $
+    A_t = sum_(i=1)^t g_i g_i^T
+  $
 
-- 
+- The resulting update is $theta_(t+1) = theta_t - eta A_t^(-1/2) g_t$, where we now use an inverse matrix square root instead of just the inverse
+
+- This is originally motivated by a convex, but potentially non-smooth online learning setting #cite(<duchi2011adaptive>)
+
+- In principle, we can also use other forms of accumulation, e.g. an exponential moving average (EMA)
+
+
+*But:* all these matrices are squared in the number of parameters!
+
+#sym.arrow too expensive to compute, store, and invert
+
+=== Approximations
+
+#image("../figures/matrix_approx.svg")
+
 
 == III. Momentum
 // Polyak and Nesterov momentum
 // Primal and dual averaging
--
+- We can use parameter iterate (primal) and gradient (dual) averaging to speed up convergence
 
 
 == Putting things together: Adam

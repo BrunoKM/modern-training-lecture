@@ -1,18 +1,79 @@
 #import "@preview/touying:0.6.1": *
+#import "../setup.typ": *
 
 = Scaling Laws \ #text(weight: "thin", size: 0.8em)[_c.f._ Scale Is All You Need]
 
-==
+== Scaling Laws: The Empirical Phenomenon
 // Describe the empirical phenomenon (Kaplan et al.), Chinchilla
 (Kaplan 2020)#cite(<kaplan2020scaling>) observe that training loss decreases predictably with:
 - Model size $N$ (number of parameters) as $L(N) prop N^(-alpha_N)$
 - Dataset size $D$ (number of tokens) as $L(D) prop D^(-alpha_D)$
+#par(leading: 0.0em, spacing: 0.0em)[
+#text(size: 0.7em)[Exponentials become lines on a log-log plot:]
+]
+
+#figure(
+  image("../figures/kaplan2020main.png"),
+  caption: [
+    *Left:* The best final (test) loss for a given compute budget (allocating compute either to dataset size or model size) also traces out a power law.\
+    *Center:* Final (test) loss for a model of a fixed size trained on different number of tokens. \
+    *Right:* Final (test) loss when training for a fixed number of tokens training models with different number of parameters. 
+  ]
+)
+
+== Scaling Law Forms
+We can fit a joint scaling law (with parameters $A, B, alpha, gamma$) to characterise the behaviour:
+*Kaplan 2020*: $L(N, D) =  (A 1 / N^alpha)  + B (1 / D))^gamma$
+#figure(
+ image("../figures/kaplan2020scaling1.png")
+)
+Issue: The limiting loss as $N, D -> infinity$ won't necessarily be zero. It should converge to #text(size: 0.6em)[(at least)] some irreducible loss $L_0$ (entropy of data generating distribution).
+
+== Scaling Law Forms: Hoffman et al.
+#shortcite(<hoffmann2022training>) include an irreducible loss $L_0$
+$
+  L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta
+$
+with constants $L_0, A, B, alpha, beta$.
+== Scaling Law Forms
+However, often in practice, the #shortcite(<kaplan2020scaling>) form with a shared exponent is a better fit. When combined with the irreducible loss $L_0$, this is a form often used in practice:
+$
+  L(N, D) = L_0 + (A 1 / N^alpha + B 1 / D )^gamma 
+$
+with constants $L_0, A, B, alpha, gamma$.
+==  The Foundation Model Paradigm
+*Traditional ML mindset*:
+- Data is scarce and expensive
+- Worry about overfitting
+- Regularisation is crucial
+
+*Foundation model mindset*:
+- Data is abundant#footnote[or _can_ be made abundant: internet, synthetic data, verifiable problems (e.g. theorem proving).], compute is scarce.
+- To get better performance $->$ just increase the compute
+- When data is abundant, and we're not repeating examples (single epoch training), we don't have to worry about generalisation error. The training loss _is_ an unbiased estimate of the test loss.
+
+#figure(
+  image("../figures/from-generalization-to-scaling.png", width: 90%)
+)
+#text(size: 0.1em)[#cite(<lechau2024rethinking>)]
 
 
 // The “foundation model” training recipe: data is abundant, compute is scarce. Increase compute to get better performance
 
 // Don't need to worry about generalisation error. Generalisation error doesn't exist in this setting: Training loss is an unbiased estimate of the validation loss
 // TODO: Runa has a figure for this
+
+
+== Scaling laws as a _practical_ tool
+
+1. *Comparing training setups* - Which algorithm is best _at scale_?
+// TODO: CREATE A FIGURE IN WHICH WE HAVE COMPUTE ON X-axis, loss on y-axis.
+// There are two lines with two colours labelled Method A and Method B.
+// Method A is better than Method B at one scale (indicated with a vertical dashed line), but then they invert since Method B has a steeper slope. There is a dashed line at the larger scale at which Method B is better than Method A.
+== 
+2. *Projecting performance* - What performance can I expect if I invest $100times$ more into training?
+#pause
++ *Compute-efficient training* - How should I allocate my compute?
 
 // Scaling laws as a _practical_ tool for training at scale. Allow for
 // 1. Comparing Training Setups (Which algorithm is better, A or B? Well, this might depend on the scale. We need to see the scaling law to see the whole picture.)
@@ -52,27 +113,6 @@ The rest of the lecture if for intellectual enjoyment only.
 
 // The “foundation model” training recipe: data is abundant, compute is scarce. Increase compute to get better performance
 
-== The Empirical Phenomenon
-
-*Key observation* (Kaplan et al., 2020): Loss decreases as a _power law_ in
-- Number of parameters $N$
-- Dataset size $D$
-- Compute budget $C$
-
-$ L(N) = (N_c / N)^(alpha_N), quad L(D) = (D_c / D)^(alpha_D), quad L(C) = (C_c / C)^(alpha_C) $
-
-where $alpha_N approx 0.076$, $alpha_D approx 0.095$, $alpha_C approx 0.050$.
-
-// SPOKEN: "Kaplan et al. made a remarkable empirical observation: the loss follows a
-// power law as we scale up. This isn't just an approximate trend - it's remarkably
-// precise across many orders of magnitude. The exponents here tell us something
-// important: the loss improves more slowly with parameters than with data, suggesting
-// data might be more valuable."
-
-// TODO: Add figure showing the power law curves from Kaplan et al. (2020) -
-// the classic log-log plots of loss vs N, D, and C
-
-
 == Power Laws: Why Log-Log Plots?
 
 A power law $y = a x^(-b)$ becomes linear in log-log space:
@@ -108,66 +148,9 @@ Key insight: Loss is _bottlenecked_ by the smaller resource.
 
 == The Foundation Model Paradigm
 
-*Traditional ML mindset*:
-- Data is scarce and expensive
-- Worry about overfitting
-- Regularisation is crucial
-
-*Foundation model mindset*:
-- Data is abundant (the internet)
-- Compute is the bottleneck
-- Scale up to get better performance
-
-// SPOKEN: "Modern large-scale training represents a paradigm shift. In traditional ML,
-// we worried about overfitting and regularisation because data was scarce. In the
-// foundation model era, we have essentially unlimited data from the internet. The
-// constraint has shifted to compute: how much can we afford to spend on training?"
-
-
-== Generalisation in the Scaling Regime
-
-*Surprising observation*: In the scaling regime, generalisation "comes for free"
-
-The training loss is an unbiased estimator of the test loss:
-
-$ EE[L_"train"] approx L_"test" $
-
-Why? We typically see each training example _at most once_.
-
-// SPOKEN: "Here's something that surprises people from traditional ML backgrounds:
-// we don't really worry about generalisation error in this regime. Because datasets
-// are so massive, we typically see each example at most once during training. That
-// means training loss is essentially an unbiased estimate of test loss. The training
-// and validation curves overlap almost perfectly."
-
-// TODO: Add Runa's figure showing training vs validation loss overlap
-
-
-== Why Does This Matter?
-
-The generalisation gap is negligible because:
-
-- Single-epoch training (or close to it)
-- No memorisation of specific examples
-- Model learns general patterns, not training set specifics
-
-This simplifies our objective: just minimise training loss!
-
-// SPOKEN: "This dramatically simplifies what we're trying to do. We don't need
-// complicated regularisation schemes or early stopping heuristics. We can just
-// focus on driving down the training loss, and test performance will follow.
-// The challenge shifts from 'how do we generalise?' to 'how do we train efficiently?'"
-
 
 == Scaling Laws as a Practical Tool
 
-Scaling laws enable three crucial capabilities:
-
-+ *Comparing training setups* - Which algorithm is better at scale?
-
-+ *Projecting performance* - What performance can I expect for a given budget?
-
-+ *Compute-efficient training* - How should I allocate my compute?
 
 // SPOKEN: "This brings us to why scaling laws are so practically important. They're
 // not just a curiosity - they're a tool for making expensive decisions. Let's look
@@ -350,13 +333,6 @@ Scaling laws remain an active research area:
 *Yes*. You can go home now.
 
 // SPOKEN: "So, is scale all you need? In some sense, yes. Scaling works. But..."
-
-<<<<<<< Updated upstream
-// Data, architecture, optimiser, hyperparameters
-// iceberg under the water: infrastructure
-=======
-#pause
->>>>>>> Stashed changes
 
 The rest of the lecture is for intellectual enjoyment only.
 
