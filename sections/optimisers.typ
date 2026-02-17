@@ -1,3 +1,5 @@
+#import "../setup.typ": *
+
 = I. How to Choose the Optimiser
 
 == Traditional optimisation
@@ -270,8 +272,21 @@ Instead of changing the norm to model the error of our linear model, we can expl
 == III. Momentum
 // Polyak and Nesterov momentum
 // Primal and dual averaging
-- We can use parameter iterate (primal) and gradient (dual) averaging to speed up convergence
+- We can use parameter iterate (primal) and gradient (dual) *averaging* to speed up convergence
 
+- There are many similar formulations, but we focus on a simple one here. See Table 1 and 3 in #shortcite(<defazio2026smoothing>) for a more general overview
+
+- Polyak momentum:
+  $
+    m_t = \beta_1 m_(t-1) + g_t 
+    theta_(t+1) = theta_t - eta m_t
+  $
+
+- EMA
+    $
+    m_t = \beta_1 m_(t-1) + (1 - beta_1) g_t 
+    theta_(t+1) = theta_t - eta m_t
+    $
 
 == Putting things together: Adam
 
