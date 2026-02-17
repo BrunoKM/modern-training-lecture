@@ -2,6 +2,7 @@
 
 // Describe the empirical phenomenon (Kaplan et al.), Chinchilla
 
+
 // The “foundation model” training recipe: data is abundant, compute is scarce. Increase compute to get better performance
 
 // Don't need to worry about generalisation error. Generalisation error doesn't exist in this setting: Training loss is an unbiased estimate of the validation loss
@@ -32,5 +33,6 @@ The rest of the lecture if for intellectual enjoyment only.
 // What components influence the constants in the scaling laws, i.e. determine data and compute efficiency.
 
 // Data, architecture, optimiser, hyperparameters
+// iceberg under the water: infrastructure
 
 // We focus on the "training algorithm" (but no clear boundaries): in particular, what optimiser + how to scale hyperparameters
