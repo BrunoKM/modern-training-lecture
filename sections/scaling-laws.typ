@@ -70,6 +70,8 @@ with constants $L_0, A, B, alpha, gamma$.
 // TODO: CREATE A FIGURE IN WHICH WE HAVE COMPUTE ON X-axis, loss on y-axis.
 // There are two lines with two colours labelled Method A and Method B.
 // Method A is better than Method B at one scale (indicated with a vertical dashed line), but then they invert since Method B has a steeper slope. There is a dashed line at the larger scale at which Method B is better than Method A.
+
+#image("../figures/kaplan-lstm-vs-transformer.png")
 == 
 2. *Projecting performance* - What performance can I expect if I invest $100times$ more into training?
 #pause
