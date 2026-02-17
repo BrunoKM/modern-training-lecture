@@ -9,7 +9,7 @@
 - Model size $N$ (number of parameters) as $L(N) prop N^(-alpha_N)$
 - Dataset size $D$ (number of tokens) as $L(D) prop D^(-alpha_D)$
 #par(leading: 0.0em, spacing: 0.0em)[
-#text(size: 0.7em)[Exponentials become lines on a log-log plot:]
+  #text(size: 0.7em)[Exponentials become lines on a log-log plot:]
 ]
 
 #figure(
@@ -17,15 +17,15 @@
   caption: [
     *Left:* The best final (test) loss for a given compute budget (allocating compute either to dataset size or model size) also traces out a power law.\
     *Center:* Final (test) loss for a model of a fixed size trained on different number of tokens. \
-    *Right:* Final (test) loss when training for a fixed number of tokens training models with different number of parameters. 
-  ]
+    *Right:* Final (test) loss when training for a fixed number of tokens training models with different number of parameters.
+  ],
 )
 
 == Scaling Law Forms
 We can fit a joint scaling law (with parameters $A, B, alpha, gamma$) to characterise the behaviour:
-*Kaplan 2020*: $L(N, D) =  (A 1 / N^alpha)  + B (1 / D))^gamma$
+*Kaplan 2020*: $L(N, D) = (A 1 / N^alpha) + B (1 / D))^gamma$
 #figure(
- image("../figures/kaplan2020scaling1.png")
+  image("../figures/kaplan2020scaling1.png"),
 )
 Issue: The limiting loss as $N, D -> infinity$ won't necessarily be zero. It should converge to #text(size: 0.6em)[(at least)] some irreducible loss $L_0$ (entropy of data generating distribution).
 
@@ -38,10 +38,10 @@ with constants $L_0, A, B, alpha, beta$.
 == Scaling Law Forms
 However, often in practice, the #shortcite(<kaplan2020scaling>) form with a shared exponent is a better fit. When combined with the irreducible loss $L_0$, this is a form often used in practice:
 $
-  L(N, D) = L_0 + (A 1 / N^alpha + B 1 / D )^gamma 
+  L(N, D) = L_0 + (A 1 / N^alpha + B 1 / D )^gamma
 $
 with constants $L_0, A, B, alpha, gamma$.
-==  The Foundation Model Paradigm
+== The Foundation Model Paradigm
 *Traditional ML mindset*:
 - Data is scarce and expensive
 - Worry about overfitting
@@ -53,7 +53,7 @@ with constants $L_0, A, B, alpha, gamma$.
 - When data is abundant, and we're not repeating examples (single epoch training), we don't have to worry about generalisation error. The training loss _is_ an unbiased estimate of the test loss.
 
 #figure(
-  image("../figures/from-generalization-to-scaling.png", width: 90%)
+  image("../figures/from-generalization-to-scaling.png", width: 90%),
 )
 #text(size: 0.1em)[#cite(<lechau2024rethinking>)]
 
@@ -67,12 +67,22 @@ with constants $L_0, A, B, alpha, gamma$.
 == Scaling laws as a _practical_ tool
 
 1. *Comparing training setups* - Which algorithm is best _at scale_?
-// TODO: CREATE A FIGURE IN WHICH WE HAVE COMPUTE ON X-axis, loss on y-axis.
-// There are two lines with two colours labelled Method A and Method B.
-// Method A is better than Method B at one scale (indicated with a vertical dashed line), but then they invert since Method B has a steeper slope. There is a dashed line at the larger scale at which Method B is better than Method A.
+
+
+#import "../figures/scaling-plots.typ": method-comparison-scaling
+#figure(
+  method-comparison-scaling(),
+  caption: [
+    Comparing methods at different scales. Method A (blue) is better at Scale 1, but Method B (red) has a steeper slope and overtakes at Scale 2. The crossover point determines which method to use at production scale.
+  ],
+)
+
+==
+1. *Comparing training setups* - Which algorithm is best _at scale_?
 
 #image("../figures/kaplan-lstm-vs-transformer.png")
-== 
+
+==
 2. *Projecting performance* - What performance can I expect if I invest $100times$ more into training?
 #pause
 + *Compute-efficient training* - How should I allocate my compute?
