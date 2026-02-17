@@ -11,7 +11,7 @@
     line((0, 0), (0, 5), stroke: black)
 
     // Axis labels
-    content((4, -0.6), [Compute (log scale)])
+    content((4, -1.2), [Compute (log scale)])
     content((-0.8, 2.5), angle: 90deg, [Test Loss])
 
     // Power law curve: starts high, decreases smoothly
@@ -149,7 +149,7 @@
     line((0, 0), (0, 5), stroke: black)
 
     // Axis labels
-    content((4, -0.6), [Compute (log scale)])
+    content((4, -1.1), [Compute (log scale)])
     content((-0.8, 2.5), angle: 90deg, [Loss (log scale)])
 
     // Method A: starts lower, shallower slope (less efficient scaling)
@@ -189,14 +189,14 @@
     content((5.5, 4.8), text(size: 0.65em)[Scale 2])
 
     // Annotations for which is better at each scale
-    content((1.5, -0.9), text(size: 0.6em, fill: rgb("#2c61c2"))[A better])
-    content((5.5, -0.9), text(size: 0.6em, fill: rgb("#cc392a"))[B better])
+    content((1.5, -0.3), text(size: 0.6em, fill: rgb("#2c61c2"))[A better])
+    content((5.5, -0.3), text(size: 0.6em, fill: rgb("#cc392a"))[B better])
 
     // Legend
     line((5.8, 3.8), (6.8, 3.8), stroke: rgb("#2c61c2") + 2pt)
-    content((7.5, 3.8), text(size: 0.75em)[Method A])
+    content((8.5, 3.8), text(size: 0.75em)[Method A])
     line((5.8, 3.3), (6.8, 3.3), stroke: rgb("#cc392a") + 2pt)
-    content((7.5, 3.3), text(size: 0.75em)[Method B])
+    content((8.5, 3.3), text(size: 0.75em)[Method B])
 
     // Tick marks on x-axis
     for i in range(1, 8) {

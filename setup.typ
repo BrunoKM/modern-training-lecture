@@ -1,6 +1,6 @@
 
 #let shortcite(key) = [
-  (#cite(key, form: "author") #cite(key, form: "year"))
+  (#cite(key, form: "author") #cite(key, form: "year"))#cite(key)
 ]
 
 #let loss = $cal(L)$

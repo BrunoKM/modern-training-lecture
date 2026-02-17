@@ -23,17 +23,21 @@
 
 == Scaling Law Forms
 We can fit a joint scaling law (with parameters $A, B, alpha, gamma$) to characterise the behaviour:
-*Kaplan 2020*: $L(N, D) = (A 1 / N^alpha) + B (1 / D))^gamma$
+$
+L(N, D) = (A 1 / N^alpha) + B (1 / D))^gamma   quad quad #text[(_Kaplan scaling law_)]
+$
 #figure(
   image("../figures/kaplan2020scaling1.png"),
 )
 Issue: The limiting loss as $N, D -> infinity$ won't necessarily be zero. It should converge to #text(size: 0.6em)[(at least)] some irreducible loss $L_0$ (entropy of data generating distribution).
 
 == Scaling Law Forms: Hoffman et al.
-#shortcite(<hoffmann2022training>) include an irreducible loss $L_0$
+#shortcite(<hoffmann2022training>) include an irreducible loss $L_0$:
+
 $
-  L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta
+  L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta quad quad #text[(_Chinchilla scaling law_)]
 $
+
 with constants $L_0, A, B, alpha, beta$.
 == Scaling Law Forms
 However, often in practice, the #shortcite(<kaplan2020scaling>) form with a shared exponent is a better fit. When combined with the irreducible loss $L_0$, this is a form often used in practice:
@@ -69,23 +73,24 @@ with constants $L_0, A, B, alpha, gamma$.
 1. *Comparing training setups* - Which algorithm is best _at scale_?
 
 
+
 #import "../figures/scaling-plots.typ": method-comparison-scaling
 #figure(
   method-comparison-scaling(),
-  caption: [
-    Comparing methods at different scales. Method A (blue) is better at Scale 1, but Method B (red) has a steeper slope and overtakes at Scale 2. The crossover point determines which method to use at production scale.
-  ],
 )
+#pause
+  To compare machine learning methods, it's not enough to compare how they perform on one fixed dataset. *We need to compare how they scale.*
 
 ==
 1. *Comparing training setups* - Which algorithm is best _at scale_?
-
 #image("../figures/kaplan-lstm-vs-transformer.png")
+Example comparison of LSTMs against transformers#cite(<kaplan2020scaling>)
 
 ==
-2. *Projecting performance* - What performance can I expect if I invest $100times$ more into training?
-#pause
-+ *Compute-efficient training* - How should I allocate my compute?
+3. *Compute-efficient training* - How should I allocate my compute?
+Take for instance the Chinchilla scaling law: $L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta$
+
+For a given compute cost estimate $C(N, D)$ (e.g., $C(N, D) = 6 N D$ used in #cite(<hoffmann2022training>)) we can use methods from constrained optimisation (e.g. Lagrange multipliers) to find optimal $N, D$ for a given compute budget $c$.
 
 // Scaling laws as a _practical_ tool for training at scale. Allow for
 // 1. Comparing Training Setups (Which algorithm is better, A or B? Well, this might depend on the scale. We need to see the scaling law to see the whole picture.)
