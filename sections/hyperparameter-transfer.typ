@@ -136,41 +136,53 @@ $
 
 #slide(title: "The Maximal Update Criterion")[
   Stability + non-triviality still leave many possible parameterisations.
+  #text(size: 0.8em)[
+    - E.g. the *“NTK parameterisation”* (learning rate $prop 1\/n$) satisfies stability and non-triviality, but *features don't change* in the limit --- the network behaves like a linear model!#footnote[This has led many people to conclude infinite width limits are pathological. But NTK is only one possible limit!]
+  ]
 
-  E.g. the *“NTK parameterisation”* (learning rate $prop 1\/n$) satisfies stability and non-triviality, but *features don't change* in the limit --- the network behaves like a linear model!#footnote[This has led many people to conclude infinite width limits are pathological. But NTK is only one possible limit!]
 
-  #v(0.5em)
-
+  Need one final desideratum:
   #block(
     stroke: 0.5pt + luma(150),
     inset: 10pt,
     radius: 4pt,
     width: 100%,
   )[
-    *Maximal Feature Learning:* Weight updates should _maximally_ affect feature computation:
+    *Maximal Feature Learning:* Weight _updates_ should maximally affect feature computation:
     $
       (W_t^((ell)) - W_0^((ell))) h_t^((ell-1)) quad "has" quad Theta(1) "coordinate size"
     $
     for all layers $ell$.
   ]
 
-  #v(0.5em)
-
   This criterion requires that the *change in weights* at each layer meaningfully changes how that layer processes its inputs --- not just a vanishing perturbation.
 ]
 
-#v(0.5em)
 
+#empty-slide()[
+  #block(
+    stroke: 0.5pt + luma(150),
+    inset: 10pt,
+    radius: 4pt,
+    width: 100%,
+  )[
+    *Maximal Feature Learning:* Weight _updates_ should maximally affect feature computation:
+    $
+      (W_t^((ell)) - W_0^((ell))) h_t^((ell-1)) quad "has" quad Theta(1) "coordinate size"
+    $
+    for all layers $ell$.
+  ]
 
-#slide()[
+  #v(2em)
   #block(
     fill: luma(245),
     inset: 10pt,
     radius: 4pt,
     width: 100%,
   )[
-    #shortcite(<yang2022tensorprogramsvtuning>) show that there is a *unique* parameterisation satisfying all these criteria --- the $mu$-Parameterisation ($mu$P).
+    #shortcite(<yang2022tensorprogramsvtuning>) show that there is a *unique* parameterisation for Stochastic Gradient Descent (SGD) satisfying all these criteria --- the $mu$-Parameterisation ($mu$P).
   ]
+  // Briefly summarise the “right parameterisation”
 ]
 
 // A "taster" for the style of derivation.
