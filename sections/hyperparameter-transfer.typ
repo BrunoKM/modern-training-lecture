@@ -322,7 +322,7 @@ $
 
 #slide(title: "Implementation caveats")[
   - The adjustment formulas get more complex for more complex optimisers (e.g. adjustments for weight-decay, $epsilon$ in AdamW) and more involved architectures#cite(<dey2026dontlazycompletepenables>).
-  - Can get notoriously difficult to implement correectly (people make mistakes in published papers).
+  - Can get notoriously difficult to implement correctly (people make mistakes in published papers).
   *$->$ The current best solution is to _empirically check the desiderata hold_ for your training setup.*
 ]
 #empty-slide[
