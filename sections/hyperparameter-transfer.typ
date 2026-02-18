@@ -58,6 +58,30 @@
   - Turns out this leads to a unique parameterisation!
 ]
 
+== The $mu$P desiderata
+=== Model Definition
+
+Take a feedforward network with $L$ layers of width $n$, acting on an input $x in RR^d$:
+
+- *Layer widths:* $n_0 = d, quad n_1, dots, n_(L-1)=n, quad n_L = 1$
+- *Features:* $h^((0))(x) := x$
+- *Pre-activations:* $f^((l))(x) := W^((l)) h^((l-1))(x)$ #h(3em) for $ell = 1, dots, L$
+- *Post-activations:* $h^((l))(x) := phi(f^((l))(x))$#h(3em) for $ell = 1, dots, L$
+
+Here $phi: RR -> RR$ is an element-wise non-linearity and $W^((l)) in RR^(n_l times n_(l-1))$.
+
+We will denote quantities at training step $t$ (for $t in {0, 1, 2, ...}$) with subscript $t$ #text(size: 0.8em, fill: gray)[(e.g. $f_t^((ell))(x)$ denotes pre-activations computed on $x$ with weights $(W_t^((0)),W_t^((1)))$ at timestep $t$)].
+
+Weights are initialised element-wise #iid as:
+$
+  [W^((l))_0]_(i j) tilde cal(N)(0, alpha_l \/ n^(a^((ell))))
+$
+
+== The $mu$P desiderata
+// TODO: State the desiderata, and why they're sensible.
+//
+
+// A “taster” for the style of derivation.
 #slide(title: "Warmup: Deriving initialisation scale")[
 
   The key insight is:

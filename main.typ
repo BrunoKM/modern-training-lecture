@@ -24,7 +24,8 @@
   aspect-ratio: "4-3",
   config-info(
     title: [*Training Neural Networks at Scale*],
-    author: "Bruna Mlodozeschenhagen",
+    // author: "Bruna Mlodozeschenhagen",
+    author: "Bruno Mlodozeniec \& Runa Eschenhagen",
     layout: "medium",
     toc: true,
     count: none,
@@ -56,8 +57,9 @@
 //   Content...
 // ]
 
-#include("sections/scaling-laws.typ")
-#include("sections/optimisers.typ")
-#include("sections/hyperparameter-transfer.typ")
+#include "sections/scaling-laws.typ"
+#include "sections/optimisers.typ"
+#include "sections/hyperparameter-transfer.typ"
 
 #bibliography("references.bib", style: "chicago-shortened-notes")
+
