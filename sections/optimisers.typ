@@ -203,11 +203,11 @@ $
 $
 where $nabla cal(L)(W_t) = U_t Sigma_t V_t^T$ with $Sigma_t = Diag(sigma_t)$ is the reduced SVD.
 
-*Why these norms?*
+// *Why these norms?*
 
-They should reflect the _strcuture_ of neural networks layers. Matrix norms can be motivated by operator norms and we can extend to the multi-layer setting by constructing a modular norm #cite(<bernstein2025modular>).
+// They should reflect the _strcuture_ of neural networks layers. Matrix norms can be motivated by operator norms and we can extend to the multi-layer setting by constructing a modular norm #cite(<bernstein2025modular>).
 
-The unique advantages of the $ell_infinity$ and $S_infinity$ geometry in deep learning are still actively researched #cite(<balles2020geometry>) #cite(<davis2025spectral>).
+// The unique advantages of the $ell_infinity$ and $S_infinity$ geometry in deep learning are still actively researched #cite(<balles2020geometry>) #cite(<davis2025spectral>).
 
 *Stochastic setting*
 
@@ -367,13 +367,13 @@ The resulting update is $theta_(t+1) = theta_t - eta m_t / (sqrt(v_t) + epsilon)
   $
     theta_(t+1) = theta_t - eta g_t / sqrt(g_t^2) = theta_t - eta g_t / (|g_t|) = theta_t - eta sign(g_t)
   $
-  - we *recover SignGD* (up to a scalar scaling)!
+  - we *recover SignGD* (up to a scalar scaling)! #cite(<bernstein2018signsgd>)
 
 - In *general*, setting $epsilon=0$ for simplicity, we can decompose the update as
   $
     m_t / sqrt(v_t) = (|m_t|) / sqrt(v_t) sign(m_t) = 1 / sqrt(1 + (v_t - m_t^2) / m_t^2) quad underbrace(sign(m_t), "Signum")
   $
-  - we get *element-wise scaled Signum*, where the scaling lies in $(0, 1]$
+  - we get *element-wise scaled Signum*, where the scaling lies in $(0, 1]$ #cite(<balles2017dissecting>)
   - this has originally been interpreted as _variance adaptation_
 
 #sym.arrow These results show that Adam is connected to *$ell_infinity$ geometry*
@@ -393,7 +393,11 @@ But is this connection meaningful?
 
 - However, the element-wise scaling of Signum is still significant!
 
-#image("../figures/adam_signum_gap.png", height: 90%)
+
+#figure(
+  align(center, image("../figures/adam_signum_gap.png", height: 90%)),
+// caption: []
+)
 
 == Shampoo and SpectralGD
 // Remember when I said traditional optimisation doesn't leverage structure?
@@ -406,14 +410,14 @@ But is this connection meaningful?
   &= U V^T,
   $
   where $G_t = U Sigma V^T$ is the reduced SVD.
-  - we recover *SpectralGD* (up to a scalar scaling)
+  - we recover *SpectralGD* (up to a scalar scaling) #cite(<bernstein2024oldoptimizernewnorm>)
 
 - In *general*, for $beta_1 eq.not 0$ and $beta_2 eq.not 0$, we can decompose the update as
   $
   L_t^(-p) M_t R_t^(-p)= L_t^(-p) (M_t M_t^T)^(1/4) quad underbrace(U_t V_t^T, "Muon") quad (M_t^T M_t)^(1/4) R_t^(-p),
   $
   where $M_t = U_t Sigma_t V^T$ is the reduced SVD.
-  - we get *left- and right-adapted Muon*
+  - we get *left- and right-adapted Muon* #cite(<eschenhagen2026clarifying>)
 
 #sym.arrow These results show that Shampoo is connected to *$S_infinity$ geometry*
 
@@ -442,12 +446,56 @@ But is this connection meaningful?
 
 #image("../figures/shampoo_muon_table1.png")
 
+
+== Open questions
+
+*1. Adaptation in Adam and Shampoo*
+
+  - Adam's and Shampoo's preconditioner relax the strict constraints on update that are enforced by SignGD and SpectralGD
+
+  - Adaptation to stochasticity and parameter trajectory
+
+  - How to combine preconditioning (adaptivity) with momentum
+
+#figure(
+  align(center, image("../figures/full_batch.png", height: 65%)),
+// caption: []
+)
+
+== Open questions
+
+*2. Why $ell_infinity$ and $S_infinity$ geometry?*
+
+  - modular duality #cite(<bernstein2025modular>)
+
+  - robustness to heavy-tailed class imbalance #cite(<kunstner2024heavytailed>)
+
+  - Benefits of SignGD depend on the Hessian structure #cite(<balles2020geometry>)
+
+  - structure of gradients and activations benefits SpectralGD #cite(<davis2025spectral>)
+
 == So what optimiser should I use?
 // Trade-offs: implementation, computational, memory, communication overhead and track record
 
 // Other reasons to care about optimiser: generalisation, quantisation, continual learning, etc, but we focus on optimisation.
+*
+Signum #sym.arrow Adam #sym.arrow Muon #sym.arrow Shampoo*
 
-- 
+Each arrow roughly means
+
+- _increased overhead_ (implementation, computational, memory, communication)
+
+- _faster convergence_ (data efficiency)
+
+- more modelling choices necessary (Muon and, assuming the perspective presented here, Shampoo are_ not parameter shape-agnostic_)
+
+*Some heuristics:*
+
+- if you don't want to think, use Adam
+
+- if you have time to tailor the optimiser to the problem, use Muon or Shampoo
+
+  - since LLM training is highly specialised and costly, it seems worth it to use a more sophisticated optimiser (downside is less track-record)
 
 == Other components
 
@@ -457,6 +505,12 @@ But is this connection meaningful?
 // implementation note: most implementations don't fully decouple from learning rate
 // weight decay likely multiple roles:
 // ...
+- Traditionally, $ell_2$ regularisation is used to avoid overfitting
+
+- In the scaling era of deep learning, we typically use _decoupled_ weight decay
+
+  - Surprisingly, the *role of weight decay* is complex and *not well-understood*
+  
 
 === Adapting hyperparameters
 // instead of just considering a few global, constant hyperparameters, we can
@@ -464,3 +518,10 @@ But is this connection meaningful?
 // 2) allow different hyperparamters for different subsets of the model
 
 // However, as we scale training iterations, batch and model size, do we have to retune hyperparamters? Isn't this prohibitively expensive?
+- We can *schedule hyperparameters* across iterations
+
+  - Learning rate schedules are always used (warumup + linear, cosine, or stable-decay)
+
+  - In principle, scheduling other hyperparameters like $beta_1, beta_2$, and weight decay might also be beneficial
+
+- We can tune per-layer (type) hyperparameters
