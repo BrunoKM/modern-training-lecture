@@ -173,22 +173,37 @@ $
     for all layers $ell$.
   ]
 
-  #v(2em)
   #block(
     fill: luma(245),
     inset: 10pt,
     radius: 4pt,
     width: 100%,
   )[
-    #shortcite(<yang2022tensorprogramsvtuning>) show that there is a *unique* parameterisation for Stochastic Gradient Descent (SGD) satisfying all these criteria --- the $mu$-Parameterisation ($mu$P).
+    #shortcite(<yang2022tensorprogramsvtuning>) show that there is a *unique* parameterisation for SGD satisfying all these criteria --- the $mu$-Parameterisation ($mu$P).
   ]
-  // Briefly summarise the “right parameterisation”
+
+
+  #text(size: 0.8em)[
+    #align(center)[
+      #table(
+        columns: (auto, auto, auto),
+        inset: 8pt,
+        align: center,
+        stroke: 0.5pt + luma(150),
+        [*Layer type*], [Init. scale $sigma^((ell))$], [Learning rate $eta^((ell))$],
+        [Input], [$sigma_0 \/ sqrt(n)$], [$eta_0 dot n$],
+        [Hidden], [$sigma_0 \/ sqrt(n)$], [$eta_0$],
+        [Output], [$sigma_0 \/ n$], [$eta_0 \/ n$],
+      )
+    ]
+  ]
 ]
 
 // A "taster" for the style of derivation.
-#slide(title: "Warmup: Deriving initialisation scale")[
+#empty-slide[
+  == Warmup: Deriving initialisation scale
 
-  The key insight is:
+  Key insights:
 
   #block(
     fill: luma(245),
