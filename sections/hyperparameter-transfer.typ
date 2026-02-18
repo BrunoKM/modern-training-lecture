@@ -236,144 +236,73 @@ $
   By choosing the coeffient $a^((ell))$ for each layer, we can control how the variance of pre-activations scales with width.
 
 ]
-// TODO: these slides were rewritten to include a fixed scaling coefficient $a^((ell))$. Make them adjusted to follow the notation and setup described above.
 #empty-slide[
-  == Layer 1: Gaussianity by Construction
-
+  == Layer 1: Finding the constraint on $a^((1))$
   The $i$-th pre-activation in layer 1 is:
   $
     f_i^((1))(x) = sum_(j=1)^d W_(i j)^((1)) x_j
   $
 
-  Since $W_(i j)^((1)) tilde cal(N)(0, alpha_1 slash d)$ independently, this is a sum of independent Gaussians. Computing the variance:
+  Since $W_(i j)^((1)) tilde cal(N)(0, alpha_1 slash n^(a^((1))))$ (#iid), this is a sum of independent Gaussians. Computing the variance:
+  #v(-1.0em)
   $
-    Var(f_i^((1))(x)) = sum_(j=1)^d x_j^2 dot Var(W_(i j)^((1))) = sum_(j=1)^d x_j^2 dot alpha_1 / d = (alpha_1 norm(x)^2) / d
+    Var(f_i^((1))(x)) = sum_(j=1)^d x_j^2 dot alpha_1 / n^(a^((1))) = (alpha_1 norm(x)^2) / n^(a^((1)))
   $
-
-  Hence:
+  #v(-1.0em)
+  For inputs with $norm(x)^2 = Theta(d) = Theta(1)$ (i.e., input dimension is fixed), the coordinate size of $f^((1))(x)$ is:
+  #v(-1.0em)
   $
-    f_i^((1))(x) tilde cal(N)(0, sigma_1^2) quad "where" quad sigma_1^2 = (alpha_1 norm(x)^2) / d
+    "coord-size"(f^((1))(x)) = sqrt(Var(f_i^((1)))) = sqrt(alpha_1 norm(x)^2) / n^(a^((1)) slash 2)
   $
-
-  *Key observations:*
-  - *Independence:* Rows of $W^((1))$ are independent, so $f_1^((1))(x), f_2^((1))(x), dots$ are #iid
-  - *Scaling:* For inputs with $norm(x)^2 = Theta(d)$, choose $alpha_1 = 1$ to keep $sigma_1^2 = O(1)$
-
-  == Layer 2: Gaussianity by CLT
-
-  The inputs to layer 2 are $h_j^((1)) = phi(f_j^((1))(x))$, which are #iid (functions of #iid Gaussians).
-
-  The $i$-th pre-activation is:
-  $
-    f_i^((2))(x) = sum_(j=1)^(n_1) W_(i j)^((2)) h_j^((1))(x)
-  $
-
-  Each term $W_(i j)^((2)) h_j^((1))$ is independent with:
-  $
-     EE[W_(i j)^((2)) h_j^((1))] & = 0 quad "(weights are zero-mean)" \
-    Var(W_(i j)^((2)) h_j^((1))) & = (alpha_2) / n_1 dot EE[phi(f)^2] quad "where" f tilde cal(N)(0, sigma_1^2)
-  $
-
-  By the *Central Limit Theorem*, as $n_1 -> oo$:
-  $
-    f_i^((2))(x) arrow.r^d cal(N)(0, sigma_2^2) quad "where" quad sigma_2^2 = alpha_2 dot EE[phi(f)^2]
-  $
-
-  == General Recursion
-
-  By induction, suppose pre-activations at layer $l-1$ are #iid with $f_j^((l-1)) tilde cal(N)(0, sigma_(l-1)^2)$ as widths $-> oo$. Then:
-
-  + Post-activations $h_j^((l-1)) = phi(f_j^((l-1)))$ are #iid
-  + Pre-activation $f_i^((l)) = sum_j W_(i j)^((l)) h_j^((l-1))$ is a sum of #iid terms
-  + By CLT, as $n_(l-1) -> oo$: $quad f_i^((l)) arrow.r^d cal(N)(0, sigma_l^2)$
 
   #block(
-    stroke: 0.5pt + luma(150),
+    stroke: 1pt + palette1,
     inset: 10pt,
     radius: 4pt,
     width: 100%,
   )[
-    *Variance recursion:*
-    $
-      sigma_l^2 = alpha_l dot EE[phi(f)^2], quad f tilde cal(N)(0, sigma_(l-1)^2)
-    $
+    *Stability constraint:* For $f^((1))(x)$ to have $Theta(1)$ coordinate size, need: $a^((1)) = 0$.
   ]
 
-  // Actually need to mention that the last layer is a special case: it's variance is not fully constrained.
+]
+#empty-slide[
+  == Hidden Layers: Finding the constraint on $a^((ell))$ for $ell > 1$
 
-  == Variance Preservation
-
-  For stable forward propagation ($sigma_l^2 approx sigma_(l-1)^2$ for all $l$), we need:
+  For hidden layers, $n_(ell-1) = n$. The $i$-th pre-activation is:
   $
-    alpha_l = sigma_(l-1)^2 / EE[phi(f)^2]
+    f_i^((ell))(x) = sum_(j=1)^n W_(i j)^((ell)) h_j^((ell-1))(x) = alpha_ell / (n^(1/2 a^((ell)))) sum_(j=1)^n epsilon_(i j)^((ell)) h_j^((ell-1))(x)
   $
 
-  *Example: ReLU.* For $phi(t) = max(0, t)$ and $f tilde cal(N)(0, sigma^2)$:
+  where $epsilon_(i j)$ are #iid $cal(N)(0, 1)$. Each term $W_(i j)^((ell)) h_j^((ell-1))$ is independent with variance:
   $
-    EE["ReLU"(f)^2] = sigma^2 / 2
+    Var(W_(i j)^((ell)) h_j^((ell-1))) = alpha_ell / n^(1/ 2 a^((ell))) dot EE[(h_j^((ell-1)))^2]
   $
-  Hence $alpha_l = 2$ preserves variance. This gives *He initialization*:
+  (Heuristically) letting the width of the first layer go to infinity, we have that $EE[(h_j^((ell-1)))^2] = c$ for some constant $c$.
+
+  By the Central Limit Theorem, if we set $a^((ell))=1$, we get that:
   $
-    W_(i j)^((l)) tilde cal(N)(0, 2 \/ n_(l-1))
+    f_i^((ell))(x) = alpha_ell / (sqrt(n)) sum_(j=1)^n epsilon_(i j)^((ell)) h_j^((ell-1))(x) -> N(0, tilde(sigma)_ell^2)
   $
+  for some $tilde(sigma)_ell^2$. If we set $a^((ell)) < 1$, the variance of $f_i^((ell))(x)$ would diverge as $n -> infinity$. If we set $a^((ell)) > 1$, the variance would vanish.
+
+
 
   #block(
-    stroke: 1pt + black,
-    inset: 12pt,
+    stroke: 1pt + palette1,
+    inset: 10pt,
     radius: 4pt,
     width: 100%,
   )[
-    *Result.* With $alpha_1 = 1$ and $alpha_l = 2$ for $l > 1$ (ReLU), pre-activations at every layer are $O(1)$ and converge to #iid Gaussians as width $-> oo$.
+    *Stability constraint:* For $f^((ell))(x)$ to have $Theta(1)$ coordinate size, we need $a^((ell)) = 1$.
   ]
-
-  == The NNGP Kernel
-
-  The above analysis considers a single input $x$. For multiple inputs $x^((1)), dots, x^((m))$, the outputs $(f^((L))(x^((1))), dots, f^((L))(x^((m))))$ are jointly Gaussian in the infinite-width limit:
-
-  - *Mean:* $bold(0)$
-  - *Covariance:* $K(x, x') = EE[f^((L))(x) dot f^((L))(x')]$
-
-  The kernel $K$ is computed recursively. Define $K^((l))(x, x') = EE[f_i^((l))(x) dot f_i^((l))(x')]$:
-
-  $
-    K^((0))(x, x') & = (x^top x') / d \
-    K^((l))(x, x') & = alpha_l dot EE[phi(u) phi(v)]
-  $
-  where $(u, v)^top tilde cal(N)(bold(0), Sigma)$ with:
-  $
-    Sigma = mat(
-      K^((l-1))(x, x), K^((l-1))(x, x');
-      K^((l-1))(x', x), K^((l-1))(x', x')
-    )
-  $
-
-  This covariance function defines the *Neural Network Gaussian Process (NNGP)*.
-  // Define a simple feedforward neural network
-  === “Stability” desiderata
-  //
-]
-
-// Derivation...
-
-
-#slide(title: "Real desiderata")[
-  // Give all the desiderata from Tensor Programs IV and V
-  #cite(<yang2023tensorprogramsvifeature>)
-  ...
 
 ]
 
 #slide(title: "Results")[
   With $mu$P, you will keep getting better performance as you scale:
-
 ]
 
 
-// Go through all the practical considerations:
-#slide(title: "Practical considerations when implementing")[
-  ...
-
-]
 
 
 #slide(title: "Beyond width")[
@@ -388,8 +317,13 @@ $
 ]
 
 
-== $mu$P
-
-
-== Batch-size reparameterisation
-
+// // Go through all the practical considerations:
+// #slide(title: "Practical considerations when implementing")[
+//   ...
+//
+// ]
+// == $mu$P
+//
+//
+// == Batch-size reparameterisation
+//
