@@ -212,7 +212,7 @@ $
     width: 100%,
   )[
     *Layer 1:* Pre-activations are Gaussian (sums of independent Gaussians). \
-    *Layer $l > 1$:* Pre-activations converge to Gaussian as `width` $-> infinity$ by the Central Limit Theorem.
+    *Layer $l > 1$:* Pre-activations converge to Gaussian as `width` $-> infinity$ by a version of the Central Limit Theorem.
   ]
 
 ]
@@ -273,15 +273,23 @@ $
     f_i^((ell))(x) = sum_(j=1)^n W_(i j)^((ell)) h_j^((ell-1))(x) = alpha_ell / (n^(1/2 a^((ell)))) sum_(j=1)^n epsilon_(i j)^((ell)) h_j^((ell-1))(x)
   $
 
-  where $epsilon_(i j)$ are #iid $cal(N)(0, 1)$. Each term $W_(i j)^((ell)) h_j^((ell-1))$ is independent with variance:
+  where $epsilon_(i j)$ are #iid $cal(N)(0, 1)$. 
+  
+  Assume (by induction) for the previous layer $h_j^((ell-1))$ are independent and have finite variance $Var[h_j^((ell-1)))] = c$. Then each term in above sum $epsilon_(i j)^((ell)) h_j^((ell-1))$ is independent, _zero-mean_:
+
   $
-    Var(W_(i j)^((ell)) h_j^((ell-1))) = alpha_ell / n^(1/ 2 a^((ell))) dot EE[(h_j^((ell-1)))^2]
+  EE[epsilon_(i j)^((ell)) h_j^((ell-1))] = cancel(EE[epsilon_(i j)^((ell))])EE[h_j^((ell-1))] = 0
   $
-  (Heuristically) letting the width of the first layer go to infinity, we have that $EE[(h_j^((ell-1)))^2] = c$ for some constant $c$.
+  and with fixed variance:
+  $
+    Var(epsilon_(i j)^((ell)) h_j^((ell-1))) = Var[h_j^((ell-1))] = c
+  $
+  We can apply central limit theorem!
+  === 
 
   By the Central Limit Theorem, if we set $a^((ell))=1$, we get that:
   $
-    f_i^((ell))(x) = alpha_ell / (sqrt(n)) sum_(j=1)^n epsilon_(i j)^((ell)) h_j^((ell-1))(x) -> N(0, tilde(sigma)_ell^2)
+    f_i^((ell))(x) = alpha_ell / (sqrt(n)) sum_(j=1)^n underbrace(epsilon_(i j)^((ell)) h_j^((ell-1))(x), "Independent, zero-mean") -> N(0, tilde(sigma)_ell^2)
   $
   for some $tilde(sigma)_ell^2$. If we set $a^((ell)) < 1$, the variance of $f_i^((ell))(x)$ would diverge as $n -> infinity$. If we set $a^((ell)) > 1$, the variance would vanish.
 
@@ -293,20 +301,43 @@ $
     radius: 4pt,
     width: 100%,
   )[
-    *Stability constraint:* For $f^((ell))(x)$ to have $Theta(1)$ coordinate size, we need $a^((ell)) = 1$.
+    *Stability constraint:* For $f^((ell))(x)$ to have $Theta(1)$ coordinate size, need $a^((ell)) = 1$.
   ]
 
+  #line(length: 100%)
+  - The rest of the derivation proceeds in a similar way, by induction extending to gradient updates in each layer!
+
+  - Needs quite sophisticated mathematical machinery to not use the heuristic ‘induction’ argument.
 ]
 
 #slide(title: "Results")[
-  With $mu$P, you will keep getting better performance as you scale:
+  With $mu$P, you will keep getting better performance as you scale, and the optimal hyperparameters _transfer_:
   #figure(
     image("../figures/mup-hp-transfer.png", width: 80%),
-    caption: [Scaling in width with $mu$P.#cite(<yang2022tensorprogramsvtuning>)],
+    caption: [Scaling in width with $mu$P (_right_) _vs._ the standard ‘PyTorch-like’ parameterisation (_left_).#cite(<yang2022tensorprogramsvtuning>)],
   )
+  #pause
+  *Why does it work?* Heuristically: a well-defined sensible limit means hyperparameters should have a similar effect as long as we're close enough to the limit.
 ]
 
+#slide(title: "Implementation caveats")[
+  - The adjustment formulas get more complex for more complex optimisers (e.g. adjustments for weight-decay, $epsilon$ in AdamW) and more involved architectures#cite(<dey2026dontlazycompletepenables>).
+  - Can get notoriously difficult to implement correectly (people make mistakes in published papers).
+  *$->$ The current best solution is to _empirically check the desiderata hold_ for your training setup.*
+]
+#empty-slide[
 
+  #figure(
+    image("../figures/coordinate-checks.png", width: 90%),
+    caption: [
+      We can empirically _check_ that the desiderata hold. Above figure shows the coordinate size of the feature changes ($f_t^((ell))(x) -f_0^((ell))(x)$ in our notation) in different layers is roughly constant as $n -> infinity$.
+    ]
+  )
+]
+#slide(title: "Other optimisers and architectures")[
+  - #shortcite(<yang2023tensorprogramsivbadaptive>) generalises to a broad class of optimisers
+  - #shortcite(<yang2022tensorprogramsvtuning>) discuss how to apply to nearly arbitrary optimisers.
+]
 
 
 #slide(title: "Beyond width")[
@@ -318,6 +349,21 @@ $
     ],
   )
 
+]
+
+#slide(title: "Beyond width")[
+  Other relevant literature:
+  - Similar “stable and sensible” limit arguments can be applied to batch-size reparameterisations. #cite(<malladi2022sdes>)$#h(0.11em)^3$.
+  - Token horizon transfer still lacks a similar fully-principled treatment, but _we know we have to adjust learning rate as we increase training iterations_.#cite(<bjorck2025scalingoptimallrtoken>)$#h(0.11em)^3$.
+  #figure(
+    image("../figures/optimal-lr-decays-with-scale.png", width: 50%),
+    caption: [Optimal learning rate decays with dataset size/iterations.#cite(<mlodozeniec2025completedhyperparametertransfermodules>)]
+  )
+]
+
+==
+
+#title-slide()[
 ]
 
 

@@ -316,15 +316,15 @@ $
   m_t = beta_1 m_(t-1) + (1 - beta_1) g_t
 $
 
-The resulting update is $theta_(t+1) = theta_t - eta m_t / (sqrt(v_t) + epsilon)$, where $epsilon > 0$#footnote[Ignoring bias corrections.]
+The resulting update is $theta_(t+1) = theta_t - eta m_t / (sqrt(v_t) + epsilon)$, where $epsilon > 0$.#footnote[Ignoring bias corrections.] #cite(<kingma2014adam>)
 
-== Shampoo
+== Putting things together: Shampoo
 
 - What about a *non-diagonal preconditioner*?
 
   #sym.arrow block-diagonal, Kronecker-factored
 
-- *Shampoo*
+- *Shampoo* #cite(<gupta2018shampoo>) #cite(<shi2023distributed>)
   $
     L_t = beta_2 L_(t-1) + (1-beta_2) G G^T\
     R_t = beta_2 R_(t-1) + (1-beta_2) G^T G \
@@ -436,25 +436,35 @@ But is this connection meaningful?
 
   - When people say they use Muon, they typically mean the use Muon for the *hidden weight matrices* and Adam for all other parameters
 
-#image("../figures/muon_is_scalable.png")
+#figure(
+  image("../figures/muon_is_scalable.png"),
+  caption: [#shortcite(<liu2025muon>)]
+)
 
 
 == Shampoo and Muon
 
-#image("../figures/figure1.png")
 
-#image("../figures/shampoo_muon_table1.png")
+#figure(
+  image("../figures/figure1.png"),
+  caption: [#shortcite(<eschenhagen2026clarifying>)]
+)
+
+#figure(
+  image("../figures/shampoo_muon_table1.png"),
+  caption: [#shortcite(<eschenhagen2026clarifying>)]
+)
 
 
 == Open questions
 
 *1. Adaptation in Adam and Shampoo*
 
-  - Adam's and Shampoo's preconditioner relax the strict constraints on update that are enforced by SignGD and SpectralGD
+  - Adam's and Shampoo's preconditioner relax the strict constraints on updates that are enforced by SignGD and SpectralGD
 
-  - Adaptation to stochasticity and parameter trajectory
+  - Both adapt to stochasticity and the parameter trajectory
 
-  - How to combine preconditioning (adaptivity) with momentum
+  - How to combine preconditioning (adaptivity) with momentum?
 
 #figure(
   align(center, image("../figures/full_batch.png", height: 65%)),
