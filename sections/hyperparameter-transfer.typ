@@ -54,7 +54,7 @@
 $
   #text()[Learning rate:] eta^((ell)) = eta_0 / n^(b^((ell))) quad #text[Initialisation scale] sigma^(ell) = sigma_0 / n^(a^((ell)))
 $
-- Identify the scaling coefficients $a^((ell)),b^((ell))$ for each $ell$ so that all quantities in the neural network throughout training remain _stable_  and _“sensible”_ as $n -> infinity$
+- Identify the scaling coefficients $a^((ell)),b^((ell))$ for each $ell$ so that all quantities in the neural network throughout training remain _stable_  and _“sensible”_ as $n -> infinity$.
 - Turns out this leads to a unique parameterisation!
 ]
 
