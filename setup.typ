@@ -10,6 +10,10 @@
 #let argmax = math.op("arg max", limits: true)
 
 #let Span = $"Span"$
+#let Var = math.op("Var")
+#let Cov = math.op("Cov")
+#let iid = [i.i.d.]
+
 
 #let palette1 = rgb(204, 57, 42)
 #let palette2 = rgb(79, 155, 143)
@@ -35,3 +39,4 @@
   #text(size: size, [#y], baseline: baseline)
   #h(-endshrink)
 ]
+
