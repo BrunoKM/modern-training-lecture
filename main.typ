@@ -60,4 +60,4 @@
 #include("sections/optimisers.typ")
 #include("sections/hyperparameter-transfer.typ")
 
-#bibliography("references.bib", style: "chicago-notes")
+#bibliography("references.bib", style: "chicago-shortened-notes")

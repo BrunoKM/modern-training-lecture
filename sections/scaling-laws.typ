@@ -24,7 +24,7 @@
 == Scaling Law Forms
 We can fit a joint scaling law (with parameters $A, B, alpha, gamma$) to characterise the behaviour:
 $
-L(N, D) = (A 1 / N^alpha) + B (1 / D))^gamma   quad quad #text[(_Kaplan scaling law_)]
+L(N, D) = (A 1 / N^alpha + B 1 / D)^gamma   quad quad #text[(_Kaplan scaling law_)]
 $
 #figure(
   image("../figures/kaplan2020scaling1.png"),
@@ -46,12 +46,12 @@ $
 $
 with constants $L_0, A, B, alpha, gamma$.
 == The Foundation Model Paradigm
-*Traditional ML mindset*:
+*Traditional ML approach*:
 - Data is scarce and expensive
 - Worry about overfitting
 - Regularisation is crucial
 
-*Foundation model mindset*:
+*Foundation model approach*:
 - Data is abundant#footnote[or _can_ be made abundant: internet, synthetic data, verifiable problems (e.g. theorem proving).], compute is scarce.
 - To get better performance $->$ just increase the compute
 - When data is abundant, and we're not repeating examples (single epoch training), we don't have to worry about generalisation error. The training loss _is_ an unbiased estimate of the test loss.
@@ -87,6 +87,8 @@ with constants $L_0, A, B, alpha, gamma$.
 Example comparison of LSTMs against transformers#cite(<kaplan2020scaling>)
 
 ==
+2. *Projecting performance* – If I invest $100times$ into compute for training a larger model, what performance can I expect?   
+==
 3. *Compute-efficient training* - How should I allocate my compute?
 Take for instance the Chinchilla scaling law: $L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta$
 
@@ -100,6 +102,8 @@ When plugging in the values of $alpha, beta, A, B$ from the Chinchilla paper, we
 $
 D=20 N
 $
+
+#text(size: 0.9em, fill: red)[But this is highly setup dependent (will depend on values of $alpha, beta, A, B$). Will not hold for a modern traininig setup!]
 
 // Scaling laws as a _practical_ tool for training at scale. Allow for
 // 1. Comparing Training Setups (Which algorithm is better, A or B? Well, this might depend on the scale. We need to see the scaling law to see the whole picture.)
@@ -126,9 +130,7 @@ The rest of the lecture if for intellectual enjoyment only.
 
 Key questions for the rest of the lecture:
 
-+ *Which optimiser?* Is Adam good enough? When to use something else?
++ *Which optimiser?* Is Adam good enough? Can we do better?
 
-+ *How to scale hyperparameters?* Learning rate that works at 100M parameters probably doesn't work at 100B
-
-+ *Batch size scaling*: How does optimal batch size change with scale?
-
++ *How to scale hyperparameters?* Learning rate that works at 100M parameters doesn't work at 100B parameters. How do you scale in a principled way without costly retuning?
+// + *Batch size scaling*: How does optimal batch size change with scale?

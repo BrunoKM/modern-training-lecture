@@ -272,28 +272,86 @@ Instead of changing the norm to model the error of our linear model, we can expl
 == III. Momentum
 // Polyak and Nesterov momentum
 // Primal and dual averaging
-- We can use parameter iterate (primal) and gradient (dual) *averaging* to speed up convergence
+- We can use parameter iterate (primal) and gradient (dual) *averaging* to speed up convergence; the latter is also called momentum
 
-- There are many similar formulations, but we focus on a simple one here. See Table 1 and 3 in #shortcite(<defazio2026smoothing>) for a more general overview
+- While there are many formulations of averaging, we focus on a simple form of momentum, initialised with $m_0 = 0$:
 
-- Polyak momentum:
+*Polyak momentum*
   $
-    m_t = \beta_1 m_(t-1) + g_t 
-    theta_(t+1) = theta_t - eta m_t
+    m_t = beta_1 m_(t-1) + g_t
   $
 
-- EMA
+*EMA*
     $
-    m_t = \beta_1 m_(t-1) + (1 - beta_1) g_t 
-    theta_(t+1) = theta_t - eta m_t
+    m_t = beta_1 m_(t-1) + (1 - beta_1) g_t
     $
+    
+- Then we update the parameters using the averaged gradient (momentum)
+  $
+  theta_(t+1) = theta_t - eta m_t
+  $
+  - Note that the update with the EMA and $tilde(eta) = eta / (1-beta_1)$ recovers Polyak momentum
+
+- See Table 1 and 3 in #shortcite(<defazio2026smoothing>) for a more general overview
+
 
 == Putting things together: Adam
 
--
+Using these building blocks, we can assemble Adam, the *de facto standard optimiser in deep learning*
+
+=== I. Steepest descent
+
+#sym.arrow We simply use $g_t$
+
+=== II. Preconditioner
+
+#sym.arrow We use the diagonal of an AdaGrad-like preconditioner with an EMA initialised with $v_0 = 0$ instead of sum accumulation
+$
+  v_t = beta_2 v_(t-1) + (1-beta_2) g_t^2
+$
+
+=== III. Momentum
+
+#sym.arrow We use the EMA
+$
+  m_t = beta_1 m_(t-1) + (1 - beta_1) g_t
+$
+
+The resulting update is $theta_(t+1) = theta_t - eta m_t / (sqrt(v_t) + epsilon)$, where $epsilon > 0$#footnote[Ignoring bias corrections.]
+
+== Shampoo
+
+- What about a *non-diagonal preconditioner*?
+
+  #sym.arrow block-diagonal, Kronecker-factored
+
+- *Shampoo*
+  $
+    L_t = beta_2 L_(t-1) + (1-beta_2) G G^T\
+    R_t = beta_2 R_(t-1) + (1-beta_2) G^T G \
+    W_(t+1) = W_t - eta (L_t + epsilon I)^(-p) M_t (R_t + epsilon I)^(-p)
+  $
+  - update equivalent to $eta ((R_t + epsilon I) times.o (L_t + epsilon I))^(-p) m_t$
+  - only difference to Adam is the preconditioner
+
+- *Won the MLCommons AlgoPerf training algorithms competition* (external tuning track), arguably the most rigorous non-problem-specific benchmark #cite(<kasimbeg2025accelerating>)
+
+#image("../figures/algoperf.png")
 
 
-// Duality of preconditioning and non-euclidean GD
+== But why?
+
+- You might have noticed that these choices seem *arbitrary*
+
+  - For example, we could compute the momentum over the preconditioned gradient (LaProp) instead of preconditioning the momentum (Adam)
+
+- That is because they are!
+
+- However, it clearly works, so there has to be some explanation
+
+- We will provide one somewhat opinionated perspective here
+
+
 
 == Adam and SignGD
 // Let's put things together -> Adam
@@ -302,18 +360,89 @@ Instead of changing the norm to model the error of our linear model, we can expl
 // what is it really doing?
 // focus on language models. not noise, but sign might be
 
+// Duality of preconditioning and non-euclidean GD
 // connect to SignGD with beta1=beta2=0
 // decomposition in scaled Signum
--
+- In the *extreme setting* $beta_1 = beta_2 = epsilon = 0$, the update becomes (assuming all elements of $g_t$ are non-zero)
+  $
+    theta_(t+1) = theta_t - eta g_t / sqrt(g_t^2) = theta_t - eta g_t / (|g_t|) = theta_t - eta sign(g_t)
+  $
+  - we *recover SignGD* (up to a scalar scaling)!
+
+- In *general*, setting $epsilon=0$ for simplicity, we can decompose the update as
+  $
+    m_t / sqrt(v_t) = (|m_t|) / sqrt(v_t) sign(m_t) = 1 / sqrt(1 + (v_t - m_t^2) / m_t^2) quad underbrace(sign(m_t), "Signum")
+  $
+  - we get *element-wise scaled Signum*, where the scaling lies in $(0, 1]$
+  - this has originally been interpreted as _variance adaptation_
+
+#sym.arrow These results show that Adam is connected to *$ell_infinity$ geometry*
+
+== Adam and Signum
+
+But is this connection meaningful?
+
+- SignGD, Signum, and Adam benefit from larger batch sizes and Signum is closer to Adam's performance than GD with momentum in the full-batch setting #cite(<kunstner2023noise>)
+
+- In a modern language modelling setting, Signum bridges most of the gap between SGD with momentum and Adam #cite(<orvieto2025search>)
+
+#figure(
+  image("../figures/adam_sgd_gap.png"),
+  // caption: [],
+)
+
+- However, the element-wise scaling of Signum is still significant!
+
+#image("../figures/adam_signum_gap.png", height: 90%)
 
 == Shampoo and SpectralGD
 // Remember when I said traditional optimisation doesn't leverage structure?
-
 // let's use matrix structure!
 
--
+- In the *extreme setting* $beta_1 = beta_2 = epsilon=0$, $p=1/4$, and assuming $G_t$ has full rank:
+  $
+  ( G_t G_t^T )^(-1/4) G_t (G_t^T G_t)^(-1/4) &= (U Sigma^2 U^T)^(-1/4) U Sigma V^T (V Sigma^2 V^T)^(-1/4) \
+  &= U Sigma^(-1/2) U^T U Sigma V^T V Sigma^(-1/2) V^T \
+  &= U V^T,
+  $
+  where $G_t = U Sigma V^T$ is the reduced SVD.
+  - we recover *SpectralGD* (up to a scalar scaling)
 
-== So which one should I use?
+- In *general*, for $beta_1 eq.not 0$ and $beta_2 eq.not 0$, we can decompose the update as
+  $
+  L_t^(-p) M_t R_t^(-p)= L_t^(-p) (M_t M_t^T)^(1/4) quad underbrace(U_t V_t^T, "Muon") quad (M_t^T M_t)^(1/4) R_t^(-p),
+  $
+  where $M_t = U_t Sigma_t V^T$ is the reduced SVD.
+  - we get *left- and right-adapted Muon*
+
+#sym.arrow These results show that Shampoo is connected to *$S_infinity$ geometry*
+
+== Notes on Muon
+
+- We called the matrix sign of the momentum $M_t$ Muon
+
+- But: *Muon* = #[*M*]oment#[*u*]m #[*o*]rthogonalized by #[*N*]ewton-Schulz
+
+  - The name implies a specific efficient numerical method for computing the matrix sign!
+  
+  - We overload this terminology here
+
+- Muon has become increasingly popular for LLM training #cite(<liu2025muon>)
+
+  - Up to 1 trillion parameter models (32B active)
+
+  - When people say they use Muon, they typically mean the use Muon for the *hidden weight matrices* and Adam for all other parameters
+
+#image("../figures/muon_is_scalable.png")
+
+
+== Shampoo and Muon
+
+#image("../figures/figure1.png")
+
+#image("../figures/shampoo_muon_table1.png")
+
+== So what optimiser should I use?
 // Trade-offs: implementation, computational, memory, communication overhead and track record
 
 // Other reasons to care about optimiser: generalisation, quantisation, continual learning, etc, but we focus on optimisation.
