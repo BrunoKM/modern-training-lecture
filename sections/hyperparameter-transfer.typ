@@ -156,6 +156,8 @@
     $
   ]
 
+  // Actually need to mention that the last layer is a special case: it's variance is not fully constrained.
+
   == Variance Preservation
 
   For stable forward propagation ($sigma_l^2 approx sigma_(l-1)^2$ for all $l$), we need:
