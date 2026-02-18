@@ -300,6 +300,10 @@ $
 
 #slide(title: "Results")[
   With $mu$P, you will keep getting better performance as you scale:
+  #figure(
+    image("../figures/mup-hp-transfer.png", width: 80%),
+    caption: [Scaling in width with $mu$P.#cite(<yang2022tensorprogramsvtuning>)],
+  )
 ]
 
 
