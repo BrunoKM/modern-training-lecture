@@ -78,10 +78,106 @@ $
 $
 
 == The $mu$P desiderata
-// TODO: State the desiderata, and why they're sensible.
-//
 
-// A “taster” for the style of derivation.
+#slide(title: [$mu$P _desiderata_: What should hold as width → ∞?])[
+  We want to identify parameterisations where *sensible* behaviour persevers as we scale width $n -> infinity$.
+
+  By coordinate size of a vector $bold(v) in RR^n$ we mean “empirical standard deviation” of the coordinates: $sqrt((1/n) sum_(i=1)^n v_i^2)$. If coordinate size
+  #v(0.5em)
+
+  *Stability Desiderata:* Nothing should blow up during training.
+  - Pre-activations $f_t^((ell))(x)$ and activations $h_t^((ell))(x)$ have $O(1)$ coordinate size
+  - Network output $f_t^((L))(x)$ remains $O(1)$
+  - Changes during training don't explode: $h_t^((ell)) - h_0^((ell))$ is $O(1)$
+
+  #v(0.3em)
+
+  *Non-triviality:* The network should actually learn.
+  - Output changes during training: $f_t^((L)) - f_0^((L))$ is $Omega(1)$
+
+  #v(0.3em)
+
+  *Feature learning:* Hidden representations should change.
+  - Penultimate activations change: $h_t^((L-1)) - h_0^((L-1))$ has $Omega(1)$ coordinate size
+]
+
+#slide(title: "The Maximal Update Criterion")[
+  Stability + non-triviality + feature learning still leaves many parameterisations.
+
+  #v(0.5em)
+
+  The *NTK parameterisation* (learning rate $prop 1\/n$) satisfies stability and non-triviality, but *features don't change* in the limit --- the network behaves like a linear model!
+
+  #v(0.5em)
+
+  #block(
+    stroke: 0.5pt + luma(150),
+    inset: 10pt,
+    radius: 4pt,
+    width: 100%,
+  )[
+    *Maximal Feature Learning:* Weight updates should _maximally_ affect feature computation:
+    $
+      (W_t^((ell)) - W_0^((ell))) h_t^((ell-1)) quad "has" quad Theta(1) "coordinate size"
+    $
+    for all layers $ell$.
+  ]
+
+  #v(0.5em)
+
+  This criterion requires that the *change in weights* at each layer meaningfully changes how that layer processes its inputs --- not just a vanishing perturbation.
+]
+
+#slide(title: "Why These Desiderata?")[
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 1em,
+    [
+      *Without stability:*
+      - Activations/gradients explode
+      - Training diverges at large width
+      - Default PyTorch/TensorFlow params are unstable!
+    ],
+    [
+      *Without non-triviality:*
+      - Network output doesn't change
+      - e.g., learning rate = 0
+      - Useless limit
+    ],
+  )
+
+  #v(0.5em)
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 1em,
+    [
+      *Without feature learning:*
+      - Hidden features frozen at init
+      - Fine-tuning wouldn't work
+      - NTK regime: linear model
+    ],
+    [
+      *Without maximal updates:*
+      - Some layers may not learn
+      - e.g., only first layer changes
+      - Wasted capacity
+    ],
+  )
+
+  #v(0.5em)
+
+  #block(
+    fill: luma(245),
+    inset: 10pt,
+    radius: 4pt,
+    width: 100%,
+  )[
+    #shortcite(<yang2022tensorprogramsvtuning>) show that there is a *unique* parameterisation satisfying all these criteria --- the $mu$-Parameterisation ($mu$P).
+  ]
+]
+
+// A "taster" for the style of derivation.
 #slide(title: "Warmup: Deriving initialisation scale")[
 
   The key insight is:
