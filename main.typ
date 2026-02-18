@@ -25,7 +25,7 @@
   config-info(
     title: [*Training Neural Networks at Scale*],
     // author: "Bruna Mlodozeschenhagen",
-    author: "Bruno Mlodozeniec \& Runa Eschenhagen",
+    author: "Bruno Mlodozeniec & Runa Eschenhagen",
     layout: "medium",
     toc: true,
     count: none,

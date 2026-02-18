@@ -79,34 +79,65 @@ $
 
 == The $mu$P desiderata
 
-#slide(title: [$mu$P _desiderata_: What should hold as width → ∞?])[
-  We want to identify parameterisations where *sensible* behaviour persevers as we scale width $n -> infinity$.
+#slide(title: "Preliminaries: Asymptotic Notation")[
+  We analyse behaviour as width $n -> infinity$. Recall *Landau notation* for a sequence of real numbers $(X_1, X_2, ...)$:
 
-  By coordinate size of a vector $bold(v) in RR^n$ we mean “empirical standard deviation” of the coordinates: $sqrt((1/n) sum_(i=1)^n v_i^2)$. If coordinate size
-  #v(0.5em)
+  - $X_n = O(1)$ means _bounded above_: $thick exists b, N > 0$ such that $|X_n| <= b$ for sufficiently large $n >= N$
+  - $X_n = Omega(1)$ means _bounded below_: $thick exists a, N > 0$ such that $|X_n| >= a$ for sufficiently large $n >= N$
+  - $X_n = Theta(1)$ means _bounded both form below and above_: $thick$ both $O(1)$ and $Omega(1)$
 
-  *Stability Desiderata:* Nothing should blow up during training.
-  - Pre-activations $f_t^((ell))(x)$ and activations $h_t^((ell))(x)$ have $O(1)$ coordinate size
-  - Network output $f_t^((L))(x)$ remains $O(1)$
-  - Changes during training don't explode: $h_t^((ell)) - h_0^((ell))$ is $O(1)$
+  #text(
+    size: 0.7em,
+    fill: gray.darken(30%),
+  )[Technicality: For *random* sequences, we'll require these bounds hold *almost surely*.]
 
-  #v(0.3em)
+  We'll be dealing with sequences of _vectors_ of different size (e.g. activations in a given layer as we take width $n -> infinity$). We need to define what it means for these to be $O(1), Omega(1), Theta(1)$:
 
-  *Non-triviality:* The network should actually learn.
-  - Output changes during training: $f_t^((L)) - f_0^((L))$ is $Omega(1)$
+  #block(
+    fill: luma(245),
+    inset: 10pt,
+    radius: 4pt,
+    width: 100%,
+  )[
+    *Coordinate size* of $bold(v) in RR^n$: $quad "coord-size"(bold(v)) := sqrt(1/n sum_(i=1)^n v_i^2) = norm(bold(v))_2 \/ sqrt(n)$
 
-  #v(0.3em)
+    #v(0.3em)
 
-  *Feature learning:* Hidden representations should change.
-  - Penultimate activations change: $h_t^((L-1)) - h_0^((L-1))$ has $Omega(1)$ coordinate size
+    We say $bold(v)_n$ has $Theta(1)$ coordinate size if $"coord-size"(bold(v)_n) = Theta(1)$ as $n -> infinity$.
+  ]
 ]
 
+#slide(title: [$mu$P _desiderata_: What should hold as width → ∞?])[
+  We want to identify parameterisations where *sensible* behaviour persists as we scale width $n -> infinity$.
+
+  #v(0.2em)
+
+  *1. Stability Desiderata:* Nothing should blow up during training.
+  - Pre-activations $f_t^((ell))(x)$ and activations $h_t^((ell))(x)$ have $O(1)$ coordinate size
+  - Network output $f_t^((L))(x)$ remains $O(1)$
+  - Changes during training don't explode: $h_t^((ell)) - h_0^((ell))$ has $O(1)$ coordinate size
+
+  #text(fill: palette1.lighten(30%), size: 0.9em)[
+    _Without stability_:
+    - Activations/gradients explode.Training will diverge at large width
+    Default PyTorch/TensorFlow parameterisations _are_ unstable!
+  ]
+
+]
+==
+*2. Non-triviality desideratum:* The network should actually learn.
+- Output changes during training: $f_t^((L)) - f_0^((L))$ is $Omega(1)$
+
+#text(fill: palette1.lighten(30%), size: 0.9em)[
+  Without non-triviality:
+  - Network output doesn't change (can be achieved with e.g. `learning rate` $= 0$)
+]
+#v(0.3em)
+
 #slide(title: "The Maximal Update Criterion")[
-  Stability + non-triviality + feature learning still leaves many parameterisations.
+  Stability + non-triviality still leave many possible parameterisations.
 
-  #v(0.5em)
-
-  The *NTK parameterisation* (learning rate $prop 1\/n$) satisfies stability and non-triviality, but *features don't change* in the limit --- the network behaves like a linear model!
+  E.g. the *“NTK parameterisation”* (learning rate $prop 1\/n$) satisfies stability and non-triviality, but *features don't change* in the limit --- the network behaves like a linear model!#footnote[This has led many people to conclude infinite width limits are pathological. But NTK is only one possible limit!]
 
   #v(0.5em)
 
@@ -128,45 +159,10 @@ $
   This criterion requires that the *change in weights* at each layer meaningfully changes how that layer processes its inputs --- not just a vanishing perturbation.
 ]
 
-#slide(title: "Why These Desiderata?")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 1em,
-    [
-      *Without stability:*
-      - Activations/gradients explode
-      - Training diverges at large width
-      - Default PyTorch/TensorFlow params are unstable!
-    ],
-    [
-      *Without non-triviality:*
-      - Network output doesn't change
-      - e.g., learning rate = 0
-      - Useless limit
-    ],
-  )
+#v(0.5em)
 
-  #v(0.5em)
 
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 1em,
-    [
-      *Without feature learning:*
-      - Hidden features frozen at init
-      - Fine-tuning wouldn't work
-      - NTK regime: linear model
-    ],
-    [
-      *Without maximal updates:*
-      - Some layers may not learn
-      - e.g., only first layer changes
-      - Wasted capacity
-    ],
-  )
-
-  #v(0.5em)
-
+#slide()[
   #block(
     fill: luma(245),
     inset: 10pt,
