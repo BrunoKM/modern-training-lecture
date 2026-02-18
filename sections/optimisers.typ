@@ -12,7 +12,7 @@
 // limitation: these assumptions don't use strcuture inherint in deep learning problems, e.g. compositional, hierachicial nature of architectures and data distribution
 
 - Traditionally, we can derive *convergence guarantees* by making assumptions
-- However, it is *questionable* if to what extent the *assumptions* (e.g., convexity, smoothness) are justified in modern deep learning settings #cite(<tran2025reevaluating>)
+- However, it is *questionable* to what extent common *assumptions* (e.g., convexity, smoothness) are justified in modern deep learning settings #cite(<tran2025reevaluating>)
 - At the same time, worst case results are typically *too conservative* since they do not leverage the unique structure of the problem (e.g., architecture, data)
 - Ultimately, we rely on *empirical evaluations*
 
@@ -130,8 +130,7 @@ $
   min_(theta in RR^d) quad underbrace(EE_(cal(B) ~ cal(D)) [ ell_(cal(B))(theta) ], cal(L)(theta)),
 $
 where
-- $theta$ are the neural network parameters#footnote[Because the methods considered here operate layer-wise,
-we let $theta$ denote the (flattened) parameters of a single layer.],
+- $theta$ are the neural network parameters#footnote[Because the methods considered here operate layer-wise, we let $theta$ denote the (flattened) parameters of a single layer.],
 - $cal(B)$ is a mini-batch of data sampled from a stationary distribution $cal(D)$,
 - $ell_(cal(B)) : RR^d -> RR$ is a loss function evaluated on batch $cal(B)$.
 
