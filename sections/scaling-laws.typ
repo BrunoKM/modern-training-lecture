@@ -24,7 +24,7 @@
 == Scaling Law Forms
 We can fit a joint scaling law (with parameters $A, B, alpha, gamma$) to characterise the behaviour:
 $
-L(N, D) = (A 1 / N^alpha + B 1 / D)^gamma   quad quad #text[(_Kaplan scaling law_)]
+  L(N, D) = (A 1 / N^alpha + B 1 / D)^gamma quad quad #text[(_Kaplan scaling law_)]
 $
 #figure(
   image("../figures/kaplan2020scaling1.png"),
@@ -57,7 +57,7 @@ with constants $L_0, A, B, alpha, gamma$.
 - When data is abundant, and we're not repeating examples (single epoch training), we don't have to worry about generalisation error. The training loss _is_ an unbiased estimate of the test loss.
 
 #figure(
-  image("../figures/from-generalization-to-scaling.png", width: 90%),
+  image("../figures/from-generalization-to-scaling.png", width: 85%),
 )
 #text(size: 0.1em)[#cite(<lechau2024rethinking>)]
 
@@ -79,31 +79,51 @@ with constants $L_0, A, B, alpha, gamma$.
   method-comparison-scaling(),
 )
 #pause
-  To compare machine learning methods, it's not enough to compare how they perform on one fixed dataset. *We need to compare how they scale.*
+To compare machine learning methods, it's not enough to compare how they perform on one fixed dataset. *We need to compare how they scale.*
 
 ==
 1. *Comparing training setups* - Which algorithm is best _at scale_?
-#image("../figures/kaplan-lstm-vs-transformer.png")
-Example comparison of LSTMs against transformers#cite(<kaplan2020scaling>)
+#figure(
+  image("../figures/kaplan-lstm-vs-transformer.png", height: 50%),
+  caption: [Example scaling law comparison of LSTMs against transformers.#cite(<kaplan2020scaling>)],
+)
 
 ==
-2. *Projecting performance* – If I invest $100times$ into compute for training a larger model, what performance can I expect?   
+2. *Projecting performance* – If I invest $100times$ into compute for training a larger model, what performance can I expect?
 ==
 3. *Compute-efficient training* - How should I allocate my compute?
-Take for instance the Chinchilla scaling law: $L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta$
 
-For a given compute cost estimate $C(N, D)$ (e.g., $C(N, D) = 6 N D$ used in #cite(<hoffmann2022training>)) we can use e.g. Lagrange multipliers to find optimal $N, D$ for a given compute budget $C_0$.
-$
-nabla_(N,D, lambda) [L(N,D) + lambda (6 N D - C_0)] = 0
-$
-Solving the above gives the (compute optimal) constraint: $(alpha A) / (N^alpha) = (beta B ) / (D^beta)$.
+#figure(
+  image("../figures/hoffman-compute-optimal.png", height: 62%),
+  caption: [Parameters against final train loss for a fixed compute budget (iso-flop lines).#cite(<hoffmann2022training>)],
+)
 
-When plugging in the values of $alpha, beta, A, B$ from the Chinchilla paper, we get the infamous _Chinchilla scaling rule_:
-$
-D=20 N
-$
+#empty-slide()[
+  Take for instance the Chinchilla scaling law: $L(N, D) = L_0 + A 1 / N^alpha + B 1 / D^beta$
 
-#text(size: 0.9em, fill: red)[But this is highly setup dependent (will depend on values of $alpha, beta, A, B$). Will not hold for a modern traininig setup!]
+  For a given compute cost estimate $C(N, D)$ _(e.g. $C(N, D) approx 6 N D$ approximation used in #shortcite(<hoffmann2022training>))_ we can use e.g. Lagrange multipliers to find optimal $N, D$ for a given compute budget $C_0$.
+  $
+    nabla_(N,D, lambda) [L(N,D) + lambda (6 N D - C_0)] = 0
+  $
+  Solving the above gives the (compute optimal) constraint: $(alpha A) / (N^alpha) = (beta B ) / (D^beta)$.
+
+  When plugging in the values of $alpha, beta, A, B$ from the Chinchilla paper, we get the infamous _Chinchilla scaling rule_:
+  $
+    D=20 N
+  $
+
+  #text(
+    size: 0.9em,
+    fill: red,
+  )[But this is highly setup dependent (will depend on values of $alpha, beta, A, B$). Will not hold for a modern traininig setup!]
+]
+
+==
+#text(
+  size: 0.9em,
+  fill: red,
+)[*Even bigger caveat:* only $N$ affects inference cost! In reality, we will almost always want to train on more data than what's ‘compute optimal’.]
+// TODO: cite inference scaling?
 
 // Scaling laws as a _practical_ tool for training at scale. Allow for
 // 1. Comparing Training Setups (Which algorithm is better, A or B? Well, this might depend on the scale. We need to see the scaling law to see the whole picture.)
@@ -123,10 +143,14 @@ $
 
 
 
-== Is scale all you need?
+==
+=== Is scale all you need?
 *Yes*. You can go home now.
 
 The rest of the lecture if for intellectual enjoyment only.
+#pause
+
+Many components can drastically improve the scaling laws. Several components are strictly _needed_ to get improvement as we scale.
 
 Key questions for the rest of the lecture:
 
