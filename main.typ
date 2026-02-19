@@ -19,6 +19,10 @@
 )
 #show figure.caption: set align(left)
 
+#show footnote.entry: set text(
+  size: 0.8em
+)
+
 #import themes.metropolis: *
 #show: metropolis-theme.with(
   aspect-ratio: "4-3",
@@ -38,6 +42,9 @@
     neutral-dark: rgb("#23373b"),
     neutral-darkest: rgb("#23373b").darken(30%),
   ),
+  config-common(
+    bibliography-as-footnote: bibliography(title: none, "references.bib")
+  )
 )
 
 
