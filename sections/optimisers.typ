@@ -335,7 +335,10 @@ The resulting update is $theta_(t+1) = theta_t - eta m_t / (sqrt(v_t) + epsilon)
 
 - *Won the MLCommons AlgoPerf training algorithms competition* (external tuning track), arguably the most rigorous non-problem-specific benchmark #cite(<kasimbeg2025accelerating>)
 
-#image("../figures/algoperf.png")
+#figure(
+  image("../figures/algoperf.png"),
+  caption: [#shortcite(<kasimbeg2025accelerating>)]
+)
 
 
 == But why?
@@ -534,3 +537,13 @@ Each arrow roughly means
   - In principle, scheduling other hyperparameters like $beta_1, beta_2$, and weight decay might also be beneficial
 
 - We can tune per-layer (type) hyperparameters
+
+== Additional resources
+
+#show link: set text(orange)
+
+- #link("https://www.cs.toronto.edu/~rgrosse/courses/csc2541_2022/")[Neural Net Training Dynamics] by #link("https://www.cs.toronto.edu/~rgrosse")[Roger Grosse]
+
+- #link("https://institute-tue.ellis.eu/en/lecture-deep-optimization")[Nonconvex Optimization for Deep Learning] by #link("http://orvi.altervista.org/")[Antonio Orvieto]
+
+- #link("https://damek.github.io/STAT-4830/")[Numerical optimization for data science and machine learning] by #link("https://damek.github.io/")[Damek Davis]
